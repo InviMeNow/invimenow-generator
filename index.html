@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Generator Link Undangan Digital</title>
+  <!-- SheetJS untuk membaca .xls, .xlsx, .csv -->
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+  <style>
+    :root {
+      --bg: #f4f6f9;
+      --surface: #ffffff;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --success: #16a34a;
+      --success-hover: #15803d;
+      --whatsapp: #22c55e;
+      --whatsapp-hover: #16a34a;
+      --danger: #ef4444;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --radius: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 24px 16px;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    header {
+      margin-bottom: 24px;
+    }
+
+    header h1 {
+      font-size: 1.65rem;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    header p {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-top: 4px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 820px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    }
+
+    .card h2 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #0f172a;
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #334155;
+    }
+
+    input[type="text"],
+    input[type="url"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.92rem;
+      transition: border-color 0.2s;
+      background: #fff;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+
+    .row-inline {
+      display: flex;
+      gap: 10px;
+    }
+
+    .row-inline > div {
+      flex: 1;
+    }
+
+    .hint {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .dropzone {
+      border: 2px dashed #cbd5e1;
+      border-radius: var(--radius);
+      padding: 22px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: #f8fafc;
+    }
+
+    .dropzone:hover,
+    .dropzone.dragover {
+      border-color: var(--primary);
+      background: #eff6ff;
+    }
+
+    .dropzone p {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #334155;
+    }
+
+    .dropzone span {
+      display: block;
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 9px 14px;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.86rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.05s;
+      text-decoration: none;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+    }
+    .btn-primary:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-outline {
+      background: #fff;
+      color: #334155;
+      border: 1px solid var(--border);
+    }
+    .btn-outline:hover {
+      background: #f8fafc;
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: #fff;
+    }
+    .btn-success:hover {
+      background: var(--success-hover);
+    }
+
+    .btn-wa {
+      background: var(--whatsapp);
+      color: #fff;
+    }
+    .btn-wa:hover {
+      background: var(--whatsapp-hover);
+    }
+
+    .btn-danger {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+    .btn-danger:hover {
+      background: #fecaca;
+    }
+
+    .btn-sm {
+      padding: 6px 10px;
+      font-size: 0.8rem;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .toolbar-left,
+    .toolbar-right {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge {
+      background: #e0e7ff;
+      color: #1e40af;
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 999px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+
+    th, td {
+      padding: 11px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      background: #f8fafc;
+      font-weight: 600;
+      color: #475569;
+      white-space: nowrap;
+    }
+
+    tr:hover td {
+      background: #f8fafc;
+    }
+
+    .link-cell {
+      max-width: 340px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: var(--primary);
+      font-family: monospace;
+      font-size: 0.82rem;
+    }
+
+    .actions {
+      display: flex;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 36px 16px;
+      color: var(--muted);
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #0f172a;
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s;
+      z-index: 999;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .toast.show {
+      opacity: 1;
+    }
+
+    .column-selector {
+      display: none;
+      margin-top: 12px;
+      padding: 12px;
+      background: #f1f5f9;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Generator Link Undangan Digital</h1>
+      <p>Buat link undangan personal secara otomatis untuk setiap tamu dari file Excel (.xls, .xlsx), CSV, atau input manual.</p>
+    </header>
+
+    <div class="grid">
+      <!-- Pengaturan URL & Pesan -->
+      <div class="card">
+        <h2>1. Pengaturan Link & Template Pesan</h2>
+        <div class="form-group">
+          <label for="baseUrl">URL Utama Undangan</label>
+          <input type="url" id="baseUrl" placeholder="https://undanganmu.com/acara-kami" value="https://undanganmu.com/acara-kami" />
+          <div class="hint">Masukkan link dasar undangan digital tanpa parameter nama.</div>
+        </div>
+
+        <div class="row-inline form-group">
+          <div>
+            <label for="paramName">Parameter Nama di URL</label>
+            <select id="paramName" onchange="toggleCustomParam()">
+              <option value="to" selected>?to=Nama+Tamu (Umum)</option>
+              <option value="nama">?nama=Nama+Tamu</option>
+              <option value="guest">?guest=Nama+Tamu</option>
+              <option value="kepada">?kepada=Nama+Tamu</option>
+              <option value="path">/Nama-Tamu (Subpath)</option>
+              <option value="custom">Kustom...</option>
+            </select>
+          </div>
+          <div id="customParamWrap" style="display: none;">
+            <label for="customParam">Nama Parameter Kustom</label>
+            <input type="text" id="customParam" placeholder="misal: p atau u" value="to" />
+          </div>
+          <div>
+            <label for="spaceFormat">Format Spasi URL</label>
+            <select id="spaceFormat">
+              <option value="percent" selected>%20 (Standar URL)</option>
+              <option value="plus">+ (Tanda Plus)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 0;">
+          <label for="waTemplate">Template Pesan WhatsApp (Opsional)</label>
+          <textarea id="waTemplate" rows="4">Kepada Yth.
+Bapak/Ibu/Saudara/i {nama}
+
+Dengan penuh kebahagiaan dan rasa syukur atas kelahiran buah hati kami, kami bermaksud mengundang Bapak/Ibu/Saudara/i untuk hadir dalam acara Tasyakuran Tasmiyah & Aqiqah anak kami. 
+
+Info lengkap & detail acara dapat diakses melalui tautan berikut:
+
+{link}
+
+Terima kasih atas perhatian dan kehadirannya. 🤗</textarea>
+          <div class="hint">Gunakan <b>{nama}</b> untuk nama tamu dan <b>{link}</b> untuk tautan undangan.</div>
+        </div>
+      </div>
+
+      <!-- Import File & Input Manual -->
+      <div class="card">
+        <h2>2. Import Daftar Tamu</h2>
+        <div class="form-group">
+          <label>Upload File (.xls, .xlsx, .csv)</label>
+          <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+            <p>Klik untuk pilih file atau seret file ke sini</p>
+            <span>Mendukung format Excel (.xls, .xlsx) dan .csv</span>
+            <input type="file" id="fileInput" accept=".xls,.xlsx,.csv" style="display: none;" />
+          </div>
+          <div style="margin-top: 8px; display: flex; justify-content: space-between; align-items: center;">
+            <span class="hint">Pastikan ada kolom berisi nama tamu (misal: Nama / Guest).</span>
+            <button type="button" class="btn btn-outline btn-sm" onclick="downloadSampleExcel()">Unduh Contoh .xlsx</button>
+          </div>
+
+          <div class="column-selector" id="columnSelector">
+            <div class="row-inline" style="align-items: flex-end;">
+              <div>
+                <label for="nameColSelect">Pilih Kolom Nama Tamu</label>
+                <select id="nameColSelect"></select>
+              </div>
+              <div>
+                <label for="phoneColSelect">Kolom No. WA (Opsional)</label>
+                <select id="phoneColSelect"></select>
+              </div>
+              <div style="flex: 0;">
+                <button type="button" class="btn btn-primary" onclick="applyImportedColumns()">Tambahkan</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <hr style="border: none; border-top: 1px solid var(--border); margin: 16px 0;" />
+
+        <div class="form-group" style="margin-bottom: 0;">
+          <label for="manualNames">Tambah Manual (Satu nama per baris)</label>
+          <textarea id="manualNames" rows="3" placeholder="Budi Santoso&#10;Siti Aminah & Keluarga&#10;Dr. Andi Wijaya"></textarea>
+          <div style="margin-top: 8px; display: flex; justify-content: flex-end;">
+            <button type="button" class="btn btn-primary" onclick="addManualGuests()">+ Tambah ke Daftar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabel Hasil -->
+    <div class="card">
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <h2 style="margin: 0;">3. Daftar Link Undangan</h2>
+          <span class="badge" id="guestCount">0 Tamu</span>
+        </div>
+        <div class="toolbar-right">
+          <input type="text" id="searchInput" placeholder="Cari nama tamu..." style="width: 200px; padding: 7px 10px;" oninput="renderTable()" />
+          <button type="button" class="btn btn-outline btn-sm" onclick="copyAllLinks()">Salin Semua Link</button>
+          <button type="button" class="btn btn-success btn-sm" onclick="exportToExcel()">Export ke .xlsx</button>
+          <button type="button" class="btn btn-danger btn-sm" onclick="clearAllGuests()">Hapus Semua</button>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 50px;">No</th>
+              <th>Nama Tamu (Cover)</th>
+              <th>No. WhatsApp</th>
+              <th>Link Undangan</th>
+              <th style="width: 240px;">Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="guestTableBody">
+            <tr>
+              <td colspan="5" class="empty-state">
+                Belum ada daftar tamu. Silakan upload file Excel/CSV atau tambahkan nama secara manual.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Tersalin ke clipboard!</div>
+
+  <script>
+    let guests = [];
+    let parsedSheetRows = [];
+    let parsedHeaders = [];
+
+    // Event listener untuk input file & drag-drop
+    const fileInput = document.getElementById('fileInput');
+    const dropzone = document.getElementById('dropzone');
+
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files.length > 0) handleFile(e.target.files[0]);
+    });
+
+    dropzone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropzone.classList.add('dragover');
+    });
+
+    dropzone.addEventListener('dragleave', () => {
+      dropzone.classList.remove('dragover');
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropzone.classList.remove('dragover');
+      if (e.dataTransfer.files.length > 0) {
+        handleFile(e.dataTransfer.files[0]);
+      }
+    });
+
+    // Update otomatis saat pengaturan berubah
+    ['baseUrl', 'paramName', 'customParam', 'spaceFormat'].forEach(id => {
+      document.getElementById(id).addEventListener('input', renderTable);
+      document.getElementById(id).addEventListener('change', renderTable);
+    });
+
+    function toggleCustomParam() {
+      const val = document.getElementById('paramName').value;
+      document.getElementById('customParamWrap').style.display = val === 'custom' ? 'block' : 'none';
+      renderTable();
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2200);
+    }
+
+    function handleFile(file) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        try {
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+          const firstSheetName = workbook.SheetNames[0];
+          const worksheet = workbook.Sheets[firstSheetName];
+          const jsonData = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
+
+          if (jsonData.length === 0) {
+            alert('File kosong atau tidak memiliki baris data.');
+            return;
+          }
+
+          parsedSheetRows = jsonData;
+          parsedHeaders = Object.keys(jsonData[0]);
+
+          const nameSelect = document.getElementById('nameColSelect');
+          const phoneSelect = document.getElementById('phoneColSelect');
+          nameSelect.innerHTML = '';
+          phoneSelect.innerHTML = '<option value="">-- Tidak ada --</option>';
+
+          parsedHeaders.forEach(header => {
+            const opt1 = document.createElement('option');
+            opt1.value = header;
+            opt1.textContent = header;
+            if (/nama|name|tamu|guest|kepada/i.test(header)) opt1.selected = true;
+            nameSelect.appendChild(opt1);
+
+            const opt2 = document.createElement('option');
+            opt2.value = header;
+            opt2.textContent = header;
+            if (/wa|whatsapp|hp|telp|phone|nomor/i.test(header)) opt2.selected = true;
+            phoneSelect.appendChild(opt2);
+          });
+
+          document.getElementById('columnSelector').style.display = 'block';
+          showToast(`Berhasil membaca ${jsonData.length} baris dari ${file.name}`);
+        } catch (err) {
+          alert('Gagal membaca file. Pastikan format .xls, .xlsx, atau .csv valid.');
+          console.error(err);
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    function applyImportedColumns() {
+      const nameCol = document.getElementById('nameColSelect').value;
+      const phoneCol = document.getElementById('phoneColSelect').value;
+      let addedCount = 0;
+
+      parsedSheetRows.forEach(row => {
+        const rawName = String(row[nameCol] || '').trim();
+        const rawPhone = phoneCol ? String(row[phoneCol] || '').trim() : '';
+        if (rawName) {
+          guests.push({ name: rawName, phone: normalizePhone(rawPhone) });
+          addedCount++;
+        }
+      });
+
+      document.getElementById('columnSelector').style.display = 'none';
+      fileInput.value = '';
+      renderTable();
+      showToast(`${addedCount} tamu berhasil ditambahkan!`);
+    }
+
+    function addManualGuests() {
+      const textarea = document.getElementById('manualNames');
+      const lines = textarea.value.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+      if (lines.length === 0) return;
+
+      lines.forEach(line => {
+        // Mendukung format "Nama | 08123456789" jika user ingin sekalian isi nomor
+        const parts = line.split('|');
+        const name = parts[0].trim();
+        const phone = parts[1] ? normalizePhone(parts[1].trim()) : '';
+        if (name) {
+          guests.push({ name, phone });
+        }
+      });
+
+      textarea.value = '';
+      renderTable();
+      showToast(`${lines.length} tamu ditambahkan.`);
+    }
+
+    function normalizePhone(phone) {
+      let cleaned = phone.replace(/[^0-9]/g, '');
+      if (cleaned.startsWith('0')) {
+        cleaned = '62' + cleaned.slice(1);
+      }
+      return cleaned;
+    }
+
+    function generateInviteUrl(guestName) {
+      let base = document.getElementById('baseUrl').value.trim();
+      if (!base) base = 'https://contoh-undangan.com';
+
+      const paramType = document.getElementById('paramName').value;
+      const customParam = document.getElementById('customParam').value.trim() || 'to';
+      const spaceFormat = document.getElementById('spaceFormat').value;
+
+      let encodedName = encodeURIComponent(guestName);
+      if (spaceFormat === 'plus') {
+        encodedName = encodedName.replace(/%20/g, '+');
+      }
+
+      if (paramType === 'path') {
+        base = base.replace(/\/+$/, '');
+        return `${base}/${encodedName}`;
+      }
+
+      const paramKey = paramType === 'custom' ? customParam : paramType;
+      const separator = base.includes('?') ? '&' : '?';
+      return `${base}${separator}${encodeURIComponent(paramKey)}=${encodedName}`;
+    }
+
+    function buildMessage(guestName, link) {
+      const template = document.getElementById('waTemplate').value;
+      return template
+        .replace(/\{nama\}/gi, guestName)
+        .replace(/\{link\}/gi, link);
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('guestTableBody');
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      document.getElementById('guestCount').textContent = `${guests.length} Tamu`;
+
+      const filtered = guests
+        .map((g, idx) => ({ ...g, originalIndex: idx }))
+        .filter(g => g.name.toLowerCase().includes(search));
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" class="empty-state">
+              ${guests.length === 0
+                ? 'Belum ada daftar tamu. Silakan upload file Excel/CSV atau tambahkan nama secara manual.'
+                : 'Tidak ada tamu yang cocok dengan pencarian.'}
+            </td>
+          </tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map((g, i) => {
+        const url = generateInviteUrl(g.name);
+        const message = buildMessage(g.name, url);
+        const waHref = g.phone
+          ? `https://wa.me/${g.phone}?text=${encodeURIComponent(message)}`
+          : `https://wa.me/?text=${encodeURIComponent(message)}`;
+
+        return `
+          <tr>
+            <td>${i + 1}</td>
+            <td><strong>${escapeHtml(g.name)}</strong></td>
+            <td>${g.phone ? escapeHtml(g.phone) : '<span style="color:#94a3b8">-</span>'}</td>
+            <td class="link-cell" title="${escapeHtml(url)}">${escapeHtml(url)}</td>
+            <td>
+              <div class="actions">
+                <button type="button" class="btn btn-outline btn-sm" onclick="copyText('${escapeJs(url)}', 'Link disalin!')">Salin Link</button>
+                <button type="button" class="btn btn-outline btn-sm" onclick="copyMessage(${g.originalIndex})">Salin Pesan</button>
+                <a href="${waHref}" target="_blank" rel="noopener" class="btn btn-wa btn-sm">WA</a>
+                <button type="button" class="btn btn-danger btn-sm" onclick="removeGuest(${g.originalIndex})" title="Hapus">✕</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function copyText(text, toastMsg = 'Disalin!') {
+      navigator.clipboard.writeText(text).then(() => showToast(toastMsg));
+    }
+
+    function copyMessage(index) {
+      const g = guests[index];
+      if (!g) return;
+      const url = generateInviteUrl(g.name);
+      const msg = buildMessage(g.name, url);
+      copyText(msg, `Pesan untuk ${g.name} disalin!`);
+    }
+
+    function copyAllLinks() {
+      if (guests.length === 0) return showToast('Daftar tamu masih kosong.');
+      const all = guests.map(g => `${g.name}: ${generateInviteUrl(g.name)}`).join('\n');
+      copyText(all, `${guests.length} link berhasil disalin!`);
+    }
+
+    function removeGuest(index) {
+      guests.splice(index, 1);
+      renderTable();
+    }
+
+    function clearAllGuests() {
+      if (guests.length === 0) return;
+      if (confirm('Hapus semua daftar tamu?')) {
+        guests = [];
+        renderTable();
+      }
+    }
+
+    function exportToExcel() {
+      if (guests.length === 0) return showToast('Tidak ada data untuk diexport.');
+      const rows = guests.map((g, idx) => {
+        const link = generateInviteUrl(g.name);
+        return {
+          No: idx + 1,
+          'Nama Tamu': g.name,
+          'No WhatsApp': g.phone || '',
+          'Link Undangan': link,
+          'Pesan Siap Kirim': buildMessage(g.name, link)
+        };
+      });
+
+      const ws = XLSX.utils.json_to_sheet(rows);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Link Undangan');
+      XLSX.writeFile(wb, 'daftar-link-undangan.xlsx');
+    }
+
+    function downloadSampleExcel() {
+      const sample = [
+        { Nama: 'Budi Santoso', WhatsApp: '081234567890' },
+        { Nama: 'Siti Aminah & Keluarga', WhatsApp: '085712345678' },
+        { Nama: 'Dr. Andi Wijaya, Sp.PD', WhatsApp: '' }
+      ];
+      const ws = XLSX.utils.json_to_sheet(sample);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Tamu');
+      XLSX.writeFile(wb, 'contoh-daftar-tamu.xlsx');
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/[&<>"']/g, m => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      }[m]));
+    }
+
+    function escapeJs(str) {
+      return str.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+    }
+  </script>
+</body>
+</html>
